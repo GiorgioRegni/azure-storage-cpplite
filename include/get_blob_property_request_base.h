@@ -58,8 +58,9 @@ namespace azure {  namespace storage_lite {
         // azure::storage::lease_state m_lease_state;
         // azure::storage::lease_duration m_lease_duration;
 
-    private:
         blob_property() {}
+
+    private:
         bool m_valid;
     };
 }}  // azure::storage_lite
