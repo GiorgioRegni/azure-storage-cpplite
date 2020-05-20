@@ -34,6 +34,10 @@ namespace azure {  namespace storage_lite {
                 check_code(curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, this));
             }
             check_code(curl_easy_setopt(m_curl, CURLOPT_CUSTOMREQUEST, NULL));
+            if (this->m_interf) {
+              std::string interf_s = "eth" + std::to_string(this->m_interf);
+              check_code(curl_easy_setopt(m_curl, CURLOPT_INTERFACE, interf_s.c_str()));
+            }
             switch (m_method)
             {
             case http_method::get:

@@ -31,11 +31,18 @@ namespace azure {  namespace storage_lite {
 
         using REQUEST_TYPE = CurlEasyRequest;
 
+        int m_interf = 0;
+        
     public:
         AZURE_STORAGE_API CurlEasyRequest(std::shared_ptr<CurlEasyClient> client, CURL *h);
 
         AZURE_STORAGE_API ~CurlEasyRequest();
 
+        void set_interf(int interf)
+        {
+          m_interf = interf;
+        }
+        
         void set_url(const std::string &url) override
         {
             m_url = url;

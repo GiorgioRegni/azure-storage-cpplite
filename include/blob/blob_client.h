@@ -98,7 +98,7 @@ namespace azure { namespace storage_lite {
         /// <param name="size">The size of the data to download from the blob, in bytes.</param>
         /// <param name="os">The target stream.</param>
         /// <returns>0 on success or an error code.</returns>
-        AZURE_STORAGE_API int get_chunk_to_stream_sync_nothread(const std::string &container, const std::string &blob, unsigned long long offset, unsigned long long size, std::ostream &os, chunk_property *property);
+        AZURE_STORAGE_API int get_chunk_to_stream_sync_nothread(int interf, const std::string &container, const std::string &blob, unsigned long long offset, unsigned long long size, std::ostream &os, chunk_property *property);
 
         /// <summary>
         /// Intitiates an asynchronous operation  to download the contents of a blob to a stream.
@@ -129,7 +129,7 @@ namespace azure { namespace storage_lite {
         /// <param name="is">The source stream.</param>
         /// <param name="metadata">A <see cref="std::vector"> that respresents metadatas.</param>
         /// <returns>0 on success or an error code.</returns>
-        AZURE_STORAGE_API int upload_block_blob_from_stream_nothread(const std::string &container, const std::string &blob, std::istream &is, const std::vector<std::pair<std::string, std::string>> &metadata);
+        AZURE_STORAGE_API int upload_block_blob_from_stream_nothread(int interf, const std::string &container, const std::string &blob, std::istream &is, const std::vector<std::pair<std::string, std::string>> &metadata);
 
         /// <summary>
         /// Intitiates an asynchronous operation  to upload the contents of a blob from a stream.
@@ -159,7 +159,7 @@ namespace azure { namespace storage_lite {
         /// <param name="blob">The blob name.</param>
         /// <param name="delete_snapshots">A bool value, delete snapshots if it is true.</param>
         /// <returns>0 if success or an error code.</returns>
-        AZURE_STORAGE_API int delete_blob_nothread(const std::string &container, const std::string &blob, bool delete_snapshots = false);
+        AZURE_STORAGE_API int delete_blob_nothread(int interf, const std::string &container, const std::string &blob, bool delete_snapshots = false);
 
         /// <summary>
         /// Intitiates an asynchronous operation  to create a container.
@@ -214,7 +214,7 @@ namespace azure { namespace storage_lite {
         /// <param name="container">The container name.</param>
         /// <param name="blob">The blob name.</param>
         /// <returns>0 if OK or an error code.</returns>
-        AZURE_STORAGE_API int get_blob_property_nothread(const std::string &container, const std::string &blob, blob_property *blobProperty);
+        AZURE_STORAGE_API int get_blob_property_nothread(int interf, const std::string &container, const std::string &blob, blob_property *blobProperty);
 
         /// <summary>
         /// Intitiates an asynchronous operation  to download the block list of a blob.

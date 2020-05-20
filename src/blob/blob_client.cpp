@@ -79,7 +79,7 @@ storage_outcome<chunk_property> blob_client::get_chunk_to_stream_sync(const std:
     return storage_outcome<chunk_property>(storage_error(response.error()));
 }
 
-    int blob_client::get_chunk_to_stream_sync_nothread(const std::string &container, const std::string &blob, unsigned long long offset, unsigned long long size, std::ostream &os, chunk_property *property)
+    int blob_client::get_chunk_to_stream_sync_nothread(int interf, const std::string &container, const std::string &blob, unsigned long long offset, unsigned long long size, std::ostream &os, chunk_property *property)
 {
     auto http = m_client->get_handle();
     auto request = std::make_shared<download_blob_request>(container, blob);
@@ -97,6 +97,8 @@ storage_outcome<chunk_property> blob_client::get_chunk_to_stream_sync(const std:
     http->set_error_stream(unsuccessful, storage_iostream::create_storage_stream());
     request->build_request(*m_account, *http);
 
+    http->set_interf(interf);
+    
     int code = http->perform();
     if (code == 0) {
       if (property) {
@@ -149,7 +151,7 @@ std::future<storage_outcome<void>> blob_client::upload_block_blob_from_stream(co
     return async_executor<void>::submit(m_account, request, http, m_context);
 }
 
-int blob_client::upload_block_blob_from_stream_nothread(const std::string &container, const std::string &blob, std::istream &is, const std::vector<std::pair<std::string, std::string>> &metadata)
+    int blob_client::upload_block_blob_from_stream_nothread(int interf, const std::string &container, const std::string &blob, std::istream &is, const std::vector<std::pair<std::string, std::string>> &metadata)
 {
     auto http = m_client->get_handle();
 
@@ -171,6 +173,8 @@ int blob_client::upload_block_blob_from_stream_nothread(const std::string &conta
     http->set_error_stream(unsuccessful, storage_iostream::create_storage_stream());
     request->build_request(*m_account, *http);
 
+    http->set_interf(interf);
+    
     int code = http->perform();
     return code;
 }
@@ -203,7 +207,7 @@ std::future<storage_outcome<void>> blob_client::delete_blob(const std::string &c
     return async_executor<void>::submit(m_account, request, http, m_context);
 }
 
-int blob_client::delete_blob_nothread(const std::string &container, const std::string &blob, bool delete_snapshots)
+    int blob_client::delete_blob_nothread(int interf, const std::string &container, const std::string &blob, bool delete_snapshots)
 {
     auto http = m_client->get_handle();
 
@@ -213,6 +217,8 @@ int blob_client::delete_blob_nothread(const std::string &container, const std::s
     http->set_error_stream(unsuccessful, storage_iostream::create_storage_stream());
     request->build_request(*m_account, *http);
 
+    http->set_interf(interf);
+        
     int code = http->perform();
     return code;
 }
@@ -338,7 +344,7 @@ storage_outcome<blob_property> blob_client::get_blob_property(const std::string 
     return storage_outcome<blob_property>(blobProperty);
 }
 
-int blob_client::get_blob_property_nothread(const std::string &container, const std::string &blob, blob_property *blobProperty)
+int blob_client::get_blob_property_nothread(int interf, const std::string &container, const std::string &blob, blob_property *blobProperty)
 {
     auto http = m_client->get_handle();
 
@@ -348,6 +354,8 @@ int blob_client::get_blob_property_nothread(const std::string &container, const 
     http->set_error_stream(unsuccessful, storage_iostream::create_storage_stream());
     request->build_request(*m_account, *http);
 
+    http->set_interf(interf);
+        
     int code = http->perform();
     if (code == 0) {
       if (blobProperty) {
