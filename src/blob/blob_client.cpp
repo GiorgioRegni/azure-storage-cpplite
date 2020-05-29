@@ -98,15 +98,16 @@ storage_outcome<chunk_property> blob_client::get_chunk_to_stream_sync(const std:
     request->build_request(*m_account, *http);
 
     int code = http->perform();
-    if (code == 0) {
+    if (code == 0 && http->status_code() == 200) {
       if (property) {
         property->etag = http->get_header(constants::header_etag);
         property->totalSize = get_length_from_content_range(http->get_header(constants::header_content_range));
         std::istringstream(http->get_header(constants::header_content_length)) >> property->size;
         property->last_modified = curl_getdate(http->get_header(constants::header_last_modified).c_str(), NULL);
       }
+      return 0;
     }
-    return code;
+    return -1;
 }
 
     std::future<storage_outcome<void>> blob_client::download_blob_to_stream(const std::string &container, const std::string &blob, unsigned long long offset, unsigned long long size, std::ostream &os)
@@ -172,7 +173,11 @@ int blob_client::upload_block_blob_from_stream_nothread(const std::string &conta
     request->build_request(*m_account, *http);
 
     int code = http->perform();
-    return code;
+    if (code == 0 &&
+        (http->status_code() == 200 || http->status_code() == 201))
+      return 0;
+    else
+      return -1;
 }
 
 std::future<storage_outcome<void>> blob_client::upload_block_blob_from_stream(const std::string &container, const std::string &blob, std::istream &is, const std::vector<std::pair<std::string, std::string>> &metadata, size_t streamlen)
@@ -214,7 +219,13 @@ int blob_client::delete_blob_nothread(const std::string &container, const std::s
     request->build_request(*m_account, *http);
 
     int code = http->perform();
-    return code;
+    if (code == 0 &&
+        (http->status_code() == 200 ||
+         http->status_code() == 202 ||
+         http->status_code() == 204))
+      return 0;
+    else
+      return -1;
 }
 
 std::future<storage_outcome<void>> blob_client::create_container(const std::string &container)
@@ -348,39 +359,46 @@ int blob_client::get_blob_property_nothread(const std::string &container, const 
     http->set_error_stream(unsuccessful, storage_iostream::create_storage_stream());
     request->build_request(*m_account, *http);
 
+    blobProperty->set_valid(true);
     int code = http->perform();
     if (code == 0) {
-      if (blobProperty) {
-        blobProperty->cache_control = http->get_header(constants::header_cache_control);
-        blobProperty->content_disposition = http->get_header(constants::header_content_disposition);
-        blobProperty->content_encoding = http->get_header(constants::header_content_encoding);
-        blobProperty->content_language = http->get_header(constants::header_content_language);
-        blobProperty->content_md5 = http->get_header(constants::header_content_md5);
-        blobProperty->content_type = http->get_header(constants::header_content_type);
-        blobProperty->etag = http->get_header(constants::header_etag);
-        blobProperty->copy_status = http->get_header(constants::header_ms_copy_status);
-        blobProperty->last_modified = curl_getdate(http->get_header(constants::header_last_modified).c_str(), NULL);
-        std::string::size_type sz = 0;
+      if (http->status_code() == 200) {
+        if (blobProperty) {
+          blobProperty->cache_control = http->get_header(constants::header_cache_control);
+          blobProperty->content_disposition = http->get_header(constants::header_content_disposition);
+          blobProperty->content_encoding = http->get_header(constants::header_content_encoding);
+          blobProperty->content_language = http->get_header(constants::header_content_language);
+          blobProperty->content_md5 = http->get_header(constants::header_content_md5);
+          blobProperty->content_type = http->get_header(constants::header_content_type);
+          blobProperty->etag = http->get_header(constants::header_etag);
+          blobProperty->copy_status = http->get_header(constants::header_ms_copy_status);
+          blobProperty->last_modified = curl_getdate(http->get_header(constants::header_last_modified).c_str(), NULL);
+          std::string::size_type sz = 0;
         std::string contentLength = http->get_header(constants::header_content_length);
         if(contentLength.length() > 0)
-        {
+          {
             blobProperty->size = std::stoull(contentLength, &sz, 0);
-        }
+          }
 
         auto& headers = http->get_headers();
         for (auto iter = headers.begin(); iter != headers.end(); ++iter)
-        {
+          {
             if (iter->first.find("x-ms-meta-") == 0)
-            {
+              {
                 // We need to strip ten characters from the front of the key to account for "x-ms-meta-", and two characters from the end of the value, to account for the "\r\n".
                 blobProperty->metadata.push_back(std::make_pair(iter->first.substr(10), iter->second.substr(0, iter->second.size() - 2)));
-            }
+              }
+          }
         }
+        return 0;
+      } else {
+        // XXX only wait to tell ENOENT
+        blobProperty->set_valid(false);
+        return 0;
       }
     } else {
-      blobProperty->set_valid(false);
+      return -1;
     }
-    return code;
 }
 
 std::future<storage_outcome<void>> blob_client::upload_block_from_stream(const std::string &container, const std::string &blob, const std::string &blockid, std::istream &is)
