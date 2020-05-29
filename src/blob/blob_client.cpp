@@ -98,7 +98,8 @@ storage_outcome<chunk_property> blob_client::get_chunk_to_stream_sync(const std:
     request->build_request(*m_account, *http);
 
     int code = http->perform();
-    if (code == 0 && http->status_code() == 200) {
+    if (code == 0 &&
+        (http->status_code() == 200 || http->status_code() == 206)) {
       if (property) {
         property->etag = http->get_header(constants::header_etag);
         property->totalSize = get_length_from_content_range(http->get_header(constants::header_content_range));
