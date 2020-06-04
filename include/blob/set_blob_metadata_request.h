@@ -7,7 +7,7 @@ namespace azure {  namespace storage_lite {
     class set_blob_metadata_request final : public set_blob_metadata_request_base
     {
     public:
-        get_blob_property_request(const std::string &container, const std::string &blob)
+        set_blob_metadata_request(const std::string &container, const std::string &blob)
             : m_container(container),
             m_blob(blob) {}
 
@@ -26,7 +26,7 @@ namespace azure {  namespace storage_lite {
             return m_metadata;
         }
 
-        create_block_blob_request &set_metadata(const std::vector<std::pair<std::string, std::string>> &metadata)
+        set_blob_metadata_request &set_metadata(const std::vector<std::pair<std::string, std::string>> &metadata)
         {
             m_metadata = metadata;
             return *this;

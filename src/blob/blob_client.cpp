@@ -18,6 +18,7 @@ typedef SSIZE_T ssize_t;
 #include "blob/list_blobs_request.h"
 #include "blob/get_block_list_request.h"
 #include "blob/get_blob_property_request.h"
+#include "blob/set_blob_metadata_request.h"
 #include "blob/get_container_property_request.h"
 #include "blob/put_block_request.h"
 #include "blob/put_block_list_request.h"
@@ -195,7 +196,7 @@ int blob_client::set_blob_metadata_nothread(const std::string &container, const 
 {
     auto http = m_client->get_handle();
 
-    auto request = std::make_shared<create_block_blob_request>(container, blob);
+    auto request = std::make_shared<set_blob_metadata_request>(container, blob);
 
     if (metadata.size() > 0)
     {

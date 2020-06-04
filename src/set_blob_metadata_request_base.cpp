@@ -21,7 +21,7 @@ namespace azure {  namespace storage_lite {
         h.set_url(url.to_string());
 
         storage_headers headers;
-
+        add_content_length(h, headers, 0);
         add_ms_header(h, headers, constants::header_ms_client_request_id, r.ms_client_request_id(), true);
 
         //add ms-meta
