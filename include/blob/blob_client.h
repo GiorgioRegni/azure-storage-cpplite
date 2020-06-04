@@ -132,6 +132,15 @@ namespace azure { namespace storage_lite {
         AZURE_STORAGE_API int upload_block_blob_from_stream_nothread(const std::string &container, const std::string &blob, std::istream &is, const std::vector<std::pair<std::string, std::string>> &metadata);
 
         /// <summary>
+        /// Set blob metadata
+        /// </summary>
+        /// <param name="container">The container name.</param>
+        /// <param name="blob">The blob name.</param>
+        /// <param name="metadata">A <see cref="std::vector"> that respresents metadatas.</param>
+        /// <returns>0 on success or an error code.</returns>        
+        AZURE_STORAGE_API int set_blob_metadata_nothread(const std::string &container, const std::string &blob, const std::vector<std::pair<std::string, std::string>> &metadata);
+
+        /// <summary>
         /// Intitiates an asynchronous operation  to upload the contents of a blob from a stream.
         /// </summary>
         /// <param name="container">The container name.</param>

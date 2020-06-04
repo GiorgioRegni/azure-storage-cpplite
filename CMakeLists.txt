@@ -44,6 +44,7 @@ set(AZURE_STORAGE_LITE_HEADER
   include/get_block_list_request_base.h
   include/put_block_request_base.h
   include/get_blob_property_request_base.h
+  include/set_blob_metadata_request_base.h
   include/get_container_property_request_base.h
   include/put_block_list_request_base.h
   include/get_container_property_request_base.h
@@ -64,6 +65,7 @@ set(AZURE_STORAGE_LITE_HEADER
   include/blob/list_containers_request.h
   include/blob/list_blobs_request.h
   include/blob/get_blob_property_request.h
+  include/blob/set_blob_metadata_request.h
   include/blob/get_container_property_request.h
   include/blob/get_block_list_request.h
   include/blob/put_block_request.h
@@ -96,6 +98,7 @@ set(AZURE_STORAGE_LITE_SOURCE
   src/list_containers_request_base.cpp
   src/list_blobs_request_base.cpp
   src/get_blob_property_request_base.cpp
+  src/set_blob_metadata_request_base.cpp
   src/get_block_list_request_base.cpp
   src/get_container_property_request_base.cpp
   src/put_block_request_base.cpp

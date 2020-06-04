@@ -38,5 +38,6 @@ namespace azure {  namespace storage_lite {
         unsigned long long size;
         time_t last_modified;
         std::string etag;
+        std::vector<std::pair<std::string, std::string>> metadata;
     };
 }}  // azure::storage_lite

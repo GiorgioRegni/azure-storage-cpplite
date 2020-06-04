@@ -105,6 +105,16 @@ storage_outcome<chunk_property> blob_client::get_chunk_to_stream_sync(const std:
         property->totalSize = get_length_from_content_range(http->get_header(constants::header_content_range));
         std::istringstream(http->get_header(constants::header_content_length)) >> property->size;
         property->last_modified = curl_getdate(http->get_header(constants::header_last_modified).c_str(), NULL);
+
+        auto& headers = http->get_headers();
+        for (auto iter = headers.begin(); iter != headers.end(); ++iter)
+          {
+            if (iter->first.find("x-ms-meta-") == 0)
+              {
+                // We need to strip ten characters from the front of the key to account for "x-ms-meta-", and two characters from the end of the value, to account for the "\r\n".
+                property->metadata.push_back(std::make_pair(iter->first.substr(10), iter->second.substr(0, iter->second.size() - 2)));
+              }
+        }
       }
       return 0;
     }
@@ -181,6 +191,29 @@ int blob_client::upload_block_blob_from_stream_nothread(const std::string &conta
       return -1;
 }
 
+int blob_client::set_blob_metadata_nothread(const std::string &container, const std::string &blob, const std::vector<std::pair<std::string, std::string>> &metadata)
+{
+    auto http = m_client->get_handle();
+
+    auto request = std::make_shared<create_block_blob_request>(container, blob);
+
+    if (metadata.size() > 0)
+    {
+        request->set_metadata(metadata);
+    }
+
+    http->reset();
+    http->set_error_stream(unsuccessful, storage_iostream::create_storage_stream());
+    request->build_request(*m_account, *http);
+
+    int code = http->perform();
+    if (code == 0 &&
+        (http->status_code() == 200 || http->status_code() == 201))
+      return 0;
+    else
+      return -1;
+}
+    
 std::future<storage_outcome<void>> blob_client::upload_block_blob_from_stream(const std::string &container, const std::string &blob, std::istream &is, const std::vector<std::pair<std::string, std::string>> &metadata, size_t streamlen)
 {
     auto http = m_client->get_handle();
